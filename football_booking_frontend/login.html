@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="./login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="screen">
+            <div class="screen__content">
+                <h3 class="title">Football Booking</h3>
+                <form class="login">
+                    <div class="login__field">
+                        <i class="login__icon fas fa-user"></i>
+                        <input type="text" class="login__input" id="username" placeholder="User name / Email">
+                    </div>
+                    <div class="login__field">
+                        <i class="login__icon fas fa-lock"></i>
+                        <input type="password" class="login__input" id="password" placeholder="Password">
+                    </div>
+                    <button class="button login__submit" id="btn__login">
+                        <span class="button__text">Log In Now</span>
+                        <i class="button__icon fas fa-chevron-right"></i>
+                    </button>
+                    <button class="button create__account" id="btn__signup">
+                        <span class="button__text"><a href="./signup.html" style="text-decoration: none;">create your account</a></span>
+                        <i class="button__icon fas fa-chevron-right"></i>
+                    </button>	
+                </form>
+                <div class="social-login">
+                    <h3>log in via</h3>
+                    <div class="social-icons">
+                        <a href="#" class="social-login__icon fab fa-instagram"></a>
+                        <a href="#" class="social-login__icon fab fa-facebook"></a>
+                        <a href="#" class="social-login__icon fab fa-twitter"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="screen__background">
+                <span class="screen__background__shape screen__background__shape4"></span>
+                <span class="screen__background__shape screen__background__shape3"></span>		
+                <span class="screen__background__shape screen__background__shape2"></span>
+                <span class="screen__background__shape screen__background__shape1"></span>
+            </div>		
+        </div>
+    </div>
+</body>
+<Script>
+    var btn_login = document.getElementById('btn__login')
+    var btn_signup = document.getElementById('btn__signup')
+    //var current_user = {};
+    btn_signup.addEventListener('click', () => {
+        window.location.href = './signup.html';
+        event.preventDefault(); 
+    })
+
+    btn_login.addEventListener('click', () => {
+        event.preventDefault();
+        const url = 'https://localhost:7265/api/User/login';
+        const loginData = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            };
+        
+    const options = {
+        method: 'POST', // The request method
+        headers: {
+            'Content-Type': 'application/json' // The content type of the request
+        },
+        body: JSON.stringify(loginData) // The body of the request, converted to a JSON string
+    };
+
+    // Send the request using the fetch API
+    fetch(url, options)
+    .then(response => {
+        if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json(); // Parse the JSON response body
+    })
+    .then(data => {
+        const token = data.token; // Assuming the token is in the 'token' field of the response
+        const decodedData = parseJWT(token);
+        var current_user = decodedData
+        console.log('Decoded Data:', decodedData);
+        console.log(current_user)
+        console.log(current_user.RoleId)
+        sessionStorage.setItem('current_user', JSON.stringify(decodedData));
+        sessionStorage.setItem('token', JSON.stringify(token));
+        if( current_user.RoleId === '2') //user thường
+        {
+            window.location.href = './index.html';
+            console.log(current_user.username)
+        }else if(current_user.RoleId === '1') //admin
+        {
+            window.location.href = "./admin.html";
+            console.log(current_user.username)
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error); // Handle any errors that occurred during the fetch
+    });
+    
+            
+
+    })
+
+    // Function to parse a JWT token
+    const parseJWT = (token) => {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    };
+
+
+</Script>
+</html>

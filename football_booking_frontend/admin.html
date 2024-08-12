@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar h2 {
+            text-align: center;
+            padding: 15px;
+            margin: 0;
+            background-color: #444;
+        }
+        .sidebar a {
+            padding: 15px;
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #555;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .btn-delete {
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group select,
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" viewBox="0 0 24 24" width="24" height="24"><path d="M7 10l5 5 5-5z"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px top 50%;
+            background-size: 16px;
+        }
+
+        .form-group input[type="text"] {
+            box-sizing: border-box;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button-container button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            margin: 0 10px;
+        }
+
+        /* Màu cho từng button */
+        .button-container button.add {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .button-container button.edit {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .button-container button.delete {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        /* Hover effect */
+        .button-container button:hover {
+            opacity: 0.8;
+        }
+
+        /*  Search field*/
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container input[type="text"],
+        .search-container input[type="date"],
+        .search-container button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-container input[type="text"],
+        .search-container input[type="date"] {
+            width: 200px;
+        }
+
+        .search-container button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <a href="#" onclick="showSection('pitch'); get_all_pitch()">Pitch</a>
+        <a href="#" onclick="showSection('users'); loadUsers()">Manage Users</a>
+        <a href="#" onclick="showSection('bookings'); loadBookings()">Manage Bookings</a>
+        <a href="#" onclick="showSection('revenue');">Revenue Statistics</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+    <div class="main-content">
+        <div id="pitch" class="card hidden show-form-add">
+            <h2>Pitch</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>pitchID</th>
+                        <th>pitchName</th>
+                        <th>Location</th>
+                        <th>Size</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pitch-list">
+                    <!-- User data will be dynamically inserted here -->
+                </tbody>
+            </table>
+            <div class="button-container " >
+                <button class="add" onclick="showAddForm()">Add Pitch</button>
+                <button class="edit" onclick="editCourt()">Edit Pitch</button>
+                <button class="delete" onclick="deleteCourt()">Delete Pitch</button>
+            </div>
+            <div class="form-container hidden" id="addForm">
+                <h3>Add Pitch</h3>
+                <form id="pitchForm" onsubmit="savePitch(event)">
+                    <input type="text" id="pitchName" name="pitchName" placeholder="Pitch Name" required><br>
+                    <input type="text" id="location" name="location" placeholder="Location" required><br>
+                    <input type="text" id="size" name="size" placeholder="Size" required><br>
+                    <button type="submit" id="add-pitch">Save</button>
+                </form>
+            </div>
+            <div id="pitchData">
+                <!-- Pitch data will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- chức năng quản lý user -->
+        <div id="users" class="card hidden">
+            <h2>Manage Users</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="user-list">
+                    <!-- User data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="bookings" class="card hidden">
+            <h2>Manage Bookings</h2>
+            <!-- search field-->
+            <div class="search-container">
+                <input type="text" id="username-input" placeholder="Username">
+                <input type="date" id="date-input">
+                <button id="search-button">Search</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>bookingID</th>
+                        <th>userID</th>
+                        <th>pitchID</th>
+                        <th>timeStart</th>
+                        <th>hoursToRent</th>
+
+                    </tr>
+                </thead>
+                <tbody id="booking-list">
+                    <!-- User data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="revenue" class="card hidden">
+            <h2>Revenue Statistics</h2>
+            <form id="revenue-form">
+                <div class="form-group">
+                    <label for="day">Ngày:</label>
+                    <input type="text" id="day" name="day" placeholder="Nhập ngày (vd: 01)">
+                </div>
+                <div class="form-group">
+                    <label for="month">Tháng:</label>
+                    <input type="text" id="month" name="month" placeholder="Nhập tháng (vd: 05)">
+                </div>
+                <div class="form-group">
+                    <label for="year">Năm:</label>
+                    <input type="text" id="year" name="year" placeholder="Nhập năm (vd: 2024)">
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="show-statistics">Xem thống kê</button>
+                </div>
+                <div>
+                    <h3> *Phần này hiện kết quả thống kê*</h3>
+                    <h3 id="result-revenue"></h3>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // const bookings = [
+        //     { bookingID: 1, userID: 101, pitchID: 201, timeStart: '2024-05-01 09:00', hoursToRent: 2 },
+        //     { bookingID: 2, userID: 102, pitchID: 202, timeStart: '2024-05-02 14:00', hoursToRent: 1 },
+        //     { bookingID: 3, userID: 103, pitchID: 203, timeStart: '2024-05-03 16:00', hoursToRent: 3 },
+        //     { bookingID: 4, userID: 104, pitchID: 204, timeStart: '2024-05-04 10:00', hoursToRent: 2 },
+        //     { bookingID: 5, userID: 105, pitchID: 205, timeStart: '2024-05-05 08:00', hoursToRent: 4 }
+        // ];
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.card');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.getElementById("pitch").classList.add('hidden');
+            if (sectionId === 'bookings') {
+                loadBookings();
+            }
+
+        }
+
+        // function loadBookings() {
+        //     const bookingList = document.getElementById('booking-list');
+        //     bookingList.innerHTML = ''; // Clear existing data
+        //     bookings.forEach(booking => {
+        //         const row = document.createElement('tr');
+        //         row.innerHTML = `
+        //             <td>${booking.bookingID}</td>
+        //             <td>${booking.userID}</td>
+        //             <td>${booking.pitchID}</td>
+        //             <td>${booking.timeStart}</td>
+        //             <td>${booking.hoursToRent}</td>
+        //             <td><button class="btn-delete" onclick="deleteBooking(${booking.bookingID})">Delete</button></td>
+        //         `;
+        //         bookingList.appendChild(row);
+        //     });
+        // }
+
+        // function deleteBooking(bookingID) {
+        //     const index = bookings.findIndex(booking => booking.bookingID === bookingID);
+        //     if (index !== -1) {
+        //         bookings.splice(index, 1); // Remove booking from array
+        //         loadBookings(); // Refresh booking list
+        //         alert('Booking deleted');
+        //     }
+        // }
+
+        function viewRevenue(period) {
+            // Function to view revenue (already implemented)
+        }
+
+        // Load bookings when the page loads
+        // window.onload = function() {
+        //     loadBookings();
+        // };
+    </script>
+    
+    <script>
+        const users = [
+            { username: 'john_doe', email: 'john_doe@example.com' },
+            { username: 'jane_smith', email: 'jane_smith@example.com' },
+            { username: 'sam_jones', email: 'sam_jones@example.com' }
+        ];
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.card');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            // if (sectionId === 'users') {
+            //     loadUsers();
+            // }
+        }
+
+        // function loadUsers() {
+        //     const userList = document.getElementById('user-list');
+        //     userList.innerHTML = ''; // Clear existing data
+        //     users.forEach((user, index) => {
+        //         const row = document.createElement('tr');
+        //         row.innerHTML = `
+        //             <td>${user.username}</td>
+        //             <td>${user.email}</td>
+        //             <td><button class="btn-delete" onclick="deleteUser(${index})">Delete User</button></td>
+        //         `;
+        //         userList.appendChild(row);
+        //     });
+        // }
+
+        function addCourt() {
+            alert('Add court functionality');
+        }
+
+        function editCourt() {
+            alert('Edit court functionality');
+        }
+
+        function deleteCourt() {
+            alert('Delete court functionality');
+        }
+
+        // function deleteUser(index) {
+        //     users.splice(index, 1); // Remove user from array
+        //     loadUsers(); // Refresh user list
+        //     alert('User deleted');
+        // }
+
+        // function deleteBooking() {
+        //     alert('Delete booking functionality');
+        // }
+
+        function viewRevenue(period) {
+            alert('Viewing ' + period + ' revenue');
+        }
+
+    </script>
+
+    <script>
+       
+        function showAddForm() {
+            var addForm = document.getElementById('addForm');
+            addForm.style.display = 'block';
+
+        }
+
+        function savePitch(event) {
+            event.preventDefault(); // Prevent form submission
+
+            var pitchName = document.getElementById('pitchName').value;
+            var location = document.getElementById('location').value;
+            var size = document.getElementById('size').value;
+
+            var pitchData = document.getElementById('pitchData');
+            var pitchInfo = document.createElement('div');
+            pitchInfo = `
+                <h3>Pitch Information</h3>
+                <p><strong>Pitch Name:</strong> ${pitchName}</p>
+                <p><strong>Location:</strong> ${location}</p>
+                <p><strong>Size:</strong> ${size}</p>
+                <hr>
+            `;
+            pitchData.innerHTML = pitchInfo;
+
+            // Reset form after saving
+            document.getElementById('pitchForm').reset();
+            document.getElementById('addForm').style.display = 'none';
+        }
+
+        //==========================pitch===============
+        // get all pitch
+        async function get_all_pitch(){
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = "https://localhost:7265/api/Pitch/get-all-pitches/";
+            
+            const options = {
+                method: 'GET', // The request method
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                console.log(data);
+                renderPitches(data)
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function renderPitches(data) {
+            const tbody = document.getElementById('pitch-list');
+            tbody.innerHTML = ''; // Clear previous content
+
+            data.forEach(pitch => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${pitch.pitchId}</td>
+                    <td>${pitch.pitchName}</td>
+                    <td>${pitch.location}</td>
+                    <td>${pitch.size}</td>
+                    <td><button class="btn-delete-pitch btn-delete" onclick="delete_pitch(${pitch.pitchId})">Delete pitch</button></td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        var btn_add_pitch = document.getElementById("add-pitch")
+
+        btn_add_pitch.addEventListener('click', create_pitch)
+
+        async function create_pitch(){
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = "https://localhost:7265/api/Pitch/create-pitch/";
+
+            const pitchData = {
+                pitchName: document.getElementById('pitchName').value,
+                location: document.getElementById('location').value,
+                size: document.getElementById('size').value,
+            };
+
+            console.log(pitchData)
+            
+            const options = {
+                method: 'POST', // The request method
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(pitchData)
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                console.log(data);
+                get_all_pitch()
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function delete_pitch(pitchId){
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = `https://localhost:7265/api/Pitch/delete-pitch/${pitchId}/`;
+            
+            const options = {
+                method: 'DELETE', // The request method 
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                get_all_pitch()
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('current_user');
+            // Redirect to the login page or any other page
+            window.location.href = 'login.html';
+        }
+
+        //=====================================User======================
+        //  show users
+        async function loadUsers() {
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = "https://localhost:7265/api/User/get-all-users/";
+            
+            const options = {
+                method: 'GET', // The request method
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                console.log(data);
+                renderUsers(data)
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function renderUsers(users){
+            
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = ''; // Clear existing data
+            users.forEach((user, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.userName}</td>
+                    <td>${user.email}</td>
+                    <td><button class="btn-delete" onclick="deleteUser(${user.userId})">Delete User</button></td>
+                `;
+                userList.appendChild(row);
+            });
+        }
+
+        async function deleteUser(userId){
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = `https://localhost:7265/api/User/delete/${userId}`;
+            
+            const options = {
+                method: 'DELETE', // The request method
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }else{
+                    console.log(response.status)
+                }
+                loadUsers()
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        //=====================================Booking======================
+        async function get_all_bookings(){
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = "https://localhost:7265/api/Pitch/get-all-pitches/";
+            
+            const options = {
+                method: 'GET', // The request method
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                console.log(data);
+                renderPitches(data)
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById('search-button').addEventListener('click', searchBooking)
+
+        async function searchBooking() {
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token);
+
+            const username = document.getElementById('username-input').value.trim() || null;
+            const date = document.getElementById('date-input').value || null;
+
+            const searchData = {
+                username: username,
+                date: date
+            };
+
+            console.log(searchData)
+            const url = "https://localhost:7265/api/Booking/search/";
+            
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(searchData)
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                console.log(data);
+                // Handle the data as needed, e.g., render it on the page
+                renderSearchBookings(data)
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function loadBookings(){
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token);
+
+            const url = "https://localhost:7265/api/Booking/search-all-bookings/";
+            
+            const options = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                console.log(data);
+                // Handle the data as needed, e.g., render it on the page
+                renderSearchBookings(data)
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function renderSearchBookings(bookings) {
+            const bookingList = document.getElementById('booking-list');
+
+            // Clear previous content
+            bookingList.innerHTML = '';
+
+            // Iterate through each booking and create a table row for it
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                
+                // Populate the table row with booking information
+                row.innerHTML = `
+                    <td>${booking.bookingID}</td>
+                    <td>${booking.userId}</td>
+                    <td>${booking.pitchId}</td>
+                    <td>${new Date(booking.timeStart).toLocaleString()}</td>
+                    <td>${booking.hoursToRent}</td>
+                    <td><button class="btn-delete" onclick="deleteBooking(${booking.bookingID})">Delete</button></td>
+                `;
+                
+                // Append the row to the table body
+                bookingList.appendChild(row);
+            });
+        }
+
+        //  not do delete booking
+        async function deleteBooking(bookingID) {
+            console.log(bookingID)
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = `https://localhost:7265/api/Booking/delete/${bookingID}`;
+            
+            const options = {
+                method: 'DELETE', // The request method
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }else{
+                    console.log(response.status)
+                }
+                loadBookings()
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        //=====================================Show revenue======================
+        var btn_show_statistics = document.getElementById("show-statistics")
+
+        btn_show_statistics.addEventListener('click', () => {
+            event.preventDefault();
+            get_revenue()
+        })
+
+        async function get_revenue(){
+            var token = JSON.parse(sessionStorage.getItem('token'));
+            console.log(token)
+            const url = "https://localhost:7265/api/Booking/revenue/";
+
+            const revenueData = {
+                year: parseInt(document.getElementById('year').value),
+                month: parseInt(document.getElementById('month').value),
+                day: parseInt(document.getElementById('day').value),
+            };
+
+            
+            const options = {
+                method: 'POST', // The request method
+                headers: {
+                    'Content-Type': 'application/json', // The content type of the request
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(revenueData)
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const data = await response.json();
+                console.log(data);
+                document.getElementById('result-revenue').innerText = data + " VND"
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+    </script>
+</body>
+</html>

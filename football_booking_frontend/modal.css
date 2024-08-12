@@ -1,0 +1,51 @@
+/* Định dạng cho modal */
+.modal-content {
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    background-color: #f7f7f7;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* Định dạng cho các trường trong form */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+/* Định dạng cho nút xác nhận và nút đóng */
+.modal-footer .btn {
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+/* Định dạng cho tiêu đề của modal */
+.modal-title {
+    margin: 0;
+}
+
+/* Định dạng cho các phần tử khác nếu cần */

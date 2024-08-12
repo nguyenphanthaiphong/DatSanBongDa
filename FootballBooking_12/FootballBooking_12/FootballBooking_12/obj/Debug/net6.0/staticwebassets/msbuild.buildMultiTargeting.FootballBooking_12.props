@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\FootballBooking_12.props" />
+</Project>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="./home.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3 class="title" id="title">Header</h3>
+        </div>
+        <div class="content">
+            <div class="content-inner">
+                Content
+            </div>
+        </div>
+        <div class="footer">
+            Footer
+        </div>
+    </div>
+</body>
+<script>
+    var current_user = {};
+    window.onload = () => {
+        current_user = JSON.parse(sessionStorage.getItem('current_user'));
+        console.log(current_user)
+        if (current_user) {
+            document.title = "Welcome, " + current_user.name;
+        } else {
+            document.title = "Guest";
+        }
+    }
+</script>
+</html>

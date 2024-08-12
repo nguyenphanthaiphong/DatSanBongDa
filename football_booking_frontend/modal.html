@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt sân</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Liên kết file CSS bên ngoài -->
+    <script>
+        function confirmBooking() {
+            document.getElementById("bookingModal").style.display = "none"; // Ẩn modal
+            document.getElementById("successMessage").style.display = "block"; // Hiển thị thông báo thành công
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: #fff;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center; /* Đưa tiêu đề về giữa */
+            font-size: 24px; /* Cỡ chữ lớn hơn */
+            padding: 15px 20px; /* Tăng padding để làm nổi bật */
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            background-color: #f7f7f7;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            text-align: center; /* Canh giữa nút */
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        .modal-footer .btn {
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 18px; /* Cỡ chữ lớn hơn */
+        }
+
+        .modal-title {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">Form đặt sân</h5>
+                    <button type="button" class="close" id="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="pitchId">Mã sân</label>
+                            <input type="number" class="form-control" id="pitchId" placeholder="Nhập mã sân">
+                        </div>
+                        <div class="form-group">
+                            <label for="startTime">Thời gian bắt đầu</label>
+                            <input type="datetime-local" class="form-control" id="startTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Thời gian thuê (giờ)</label>
+                            <select class="form-control" id="duration">
+                                <option value="1">1h</option>
+                                <option value="1.5">1h30'</option>
+                                <option value="2">2h</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentMethod">Phương thức thanh toán</label>
+                            <select class="form-control" id="paymentMethod">
+                                <option value="Credit Card">Thẻ tín dụng</option>
+                                <option value="Cash">Tiền mặt</option>
+                                <option value="Bank Transfer">Chuyển khoản ngân hàng</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentState">Trạng thái thanh toán</label>
+                            <select class="form-control" id="paymentState">
+                                <option value="Pending">Chưa thanh toán</option>
+                                <option value="Paid">Đã thanh toán</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="close2" onclick="close()" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" onclick="booking()">Xác nhận đặt sân</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Thông báo thành công -->
+     <div id="successMessage" style="display: none; text-align: center;">
+        <p>Bạn đã đặt sân thành công!</p>
+        <button type="button" class="btn btn-primary" onclick="location.reload();">Kiểm tra lại thông tin sân</button>
+    </div>
+</body>
+<Script>
+    document.getElementById('close').addEventListener('click', () => {
+        close()
+    })
+    document.getElementById('close2').addEventListener('click', () => {
+        close()
+    })
+
+    function close(){
+        window.location.href = "http://127.0.0.1:5500/index.html";
+    }
+
+    async function booking(userId, token){
+        var token = JSON.parse(sessionStorage.getItem('token'));
+        console.log(token)
+        const url = "https://localhost:7265/api/Booking/book/";
+
+        const bookingData = {
+            PitchId: document.getElementById('pitchId').value,
+            TimeStart: document.getElementById('startTime').value,
+            HoursToRent: parseFloat(document.getElementById('duration').value),
+            PaymentMethod: document.getElementById('paymentMethod').value,
+            PaymentState: document.getElementById('paymentState').value
+        };
+
+        console.log(bookingData)
+        
+        const options = {
+            method: 'POST', // The request method
+            headers: {
+                'Content-Type': 'application/json', // The content type of the request
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(bookingData)
+        };
+
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            const data = await response.json();
+            console.log(data);
+            alert("booking successfully!")
+            close()
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+</Script>
+</html>

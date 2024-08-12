@@ -1,0 +1,33 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header, .footer {
+    flex: 0 0 auto; /* Allow header and footer to grow and shrink */
+    width: 100%;
+    border: solid 2px;
+    box-sizing: border-box;
+}
+
+.content {
+    flex: 1; /* Let content fill remaining space */
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    width: 100%;
+}
+
+.content-inner {
+    max-width: 1200px; /* Maximum width for content */
+    width: 100%;
+    border: solid 2px;
+    box-sizing: border-box;
+}

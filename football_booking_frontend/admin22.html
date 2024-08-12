@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin</title>
+</head>
+<body>
+    
+</body>
+<Script>
+    var current_user = {};
+    window.onload = () => {
+        current_user = JSON.parse(sessionStorage.getItem('current_user'));
+        console.log(current_user)
+        if (current_user) {
+            document.title = "Welcome, " + current_user.name;
+        } else {
+            document.title = "Guest";
+        }
+    }
+</Script>
+</html>
